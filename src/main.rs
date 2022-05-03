@@ -1,11 +1,8 @@
 use dithering::run;
-use std::env;
 use std::process;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    if let Err(e) = run(&args) {
+    if let Err(e) = run() {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }

@@ -1,37 +1,27 @@
+use clap::{ArgEnum, Parser};
+use std::path::PathBuf;
+
 /// Marks the different types of Dithering Algorithms available
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
 pub enum DitherMethod {
-    /// Grayscales the image + marks pixels as either Full Black or Full White
+    /// Converts the image to greyscale
+    GreyscaleRaw,
+    /// Greyscales the image + marks pixels as either Full Black or Full White
     BinaryQuantisation,
+    /// Greyscales the image + marks pixels as either black or white, with some random noise added to the classifier
+    NoisyQuantisation,
 }
 
-#[derive(Debug)]
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
 pub struct Config {
+    /// The dithering algorithm to use to adjust the image
+    #[clap(arg_enum, default_value_t=DitherMethod::GreyscaleRaw)]
     pub dithering_method: DitherMethod,
-    pub source_filename: String,
-    pub destination_filename: Option<String>,
-}
-
-impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 2 {
-            return Err("Not enough Arguments. Expected: 'sourceFilename' ['destFilename']");
-        }
-
-        let dithering_method = DitherMethod::BinaryQuantisation;
-
-        let destination_filename = if args.len() == 3 {
-            Some(args[2].clone())
-        } else {
-            None
-        };
-
-        let source_filename = args[1].clone();
-
-        return Ok(Config {
-            dithering_method,
-            source_filename,
-            destination_filename,
-        });
-    }
+    /// The path (absolute or relative) + filename + extension of the source image
+    #[clap(short, long, parse(from_os_str))]
+    pub source_filename: PathBuf,
+    /// The path (absolute or relative) + filename + extension to write the altered image to
+    #[clap(short, long, parse(from_os_str))]
+    pub destination_filename: Option<PathBuf>,
 }
