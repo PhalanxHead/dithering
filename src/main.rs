@@ -1,8 +1,12 @@
-use dithering::run;
+use dithering::{run, Config};
+use clap::Parser;
 use std::process;
 
 fn main() {
-    if let Err(e) = run() {
+    let parsed_args = Config::parse();
+    println!("{:?}", parsed_args);
+
+    if let Err(e) = run(parsed_args) {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }
